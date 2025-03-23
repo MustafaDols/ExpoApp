@@ -1,67 +1,49 @@
 import { useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Button, TextInput } from "react-native";
+import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet, TextInput } from "react-native";
 import Sidebar from "../components/Sidebar";
 
-const initialData = [
-  { id: 1, text: "lemon", selected: false },
-  { id: 2, text: "mango", selected: false },
-  { id: 3, text: "icon", selected: false },
+const products = [
+  { id: 1, name: "Lemon", price: "$2", image: require("../assets/lemon.png") },
+  { id: 2, name: "Mango", price: "$3", image: require("../assets/mango.png") },
+  { id: 3, name: "Orange", price: "$1.5", image: require("../assets/icon.png") },
 ];
 
 export default function HomeScreen() {
-  const [data, setData] = useState(initialData);
   const [searchQuery, setSearchQuery] = useState("");
+  const [cart, setCart] = useState([]);
 
-  // Function to delete an item by id
-  const deleteItem = (id) => {
-    setData((prevData) => prevData.filter((item) => item.id !== id));
+  const addToCart = (product) => {
+    setCart([...cart, product]);
   };
 
-  // Function to add new item from search input
-  const addItem = () => {
-    if (searchQuery.trim() !== "") {
-      const newItem = { id: Date.now(), text: searchQuery, selected: false };
-      setData([...data, newItem]);
-      setSearchQuery(""); // Clear input after adding
-    }
-  };
-
-  // Function to toggle item selection
-  const toggleItemSelection = (id) => {
-    setData((prevData) =>
-      prevData.map((item) =>
-        item.id === id ? { ...item, selected: !item.selected } : item
-      )
-    );
-  };
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <View style={styles.container}>
       <Sidebar />
       <View style={styles.content}>
-        {/* Search Input and Add Button in a row */}
+        {/* Search Input */}
         <View style={styles.searchContainer}>
           <TextInput
             style={styles.searchInput}
-            placeholder="Enter text..."
+            placeholder="Search for products..."
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
-          <Button title="Add Item" onPress={addItem} />
         </View>
 
+        {/* Products List */}
         <ScrollView>
-          {data.map((item) => (
-            <View key={item.id} style={styles.itemContainer}>
-              <TouchableOpacity onPress={() => deleteItem(item.id)}>
-                <View style={styles.item}>
-                  <Text style={styles.text}>{item.text}</Text>
-                </View>
+          {filteredProducts.map((product) => (
+            <View key={product.id} style={styles.productCard}>
+              <Image source={product.image} style={styles.productImage} />
+              <Text style={styles.productName}>{product.name}</Text>
+              <Text style={styles.productPrice}>{product.price}</Text>
+              <TouchableOpacity style={styles.addButton} onPress={() => addToCart(product)}>
+                <Text style={styles.addButtonText}>Add to Cart</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.selectionBox, item.selected && styles.selectedBox]}
-                onPress={() => toggleItemSelection(item.id)}
-              />
             </View>
           ))}
         </ScrollView>
@@ -80,45 +62,49 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
     marginBottom: 20,
   },
   searchInput: {
-    flex: 1,
     height: 40,
     borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 10,
-    marginRight: 10,
   },
-  itemContainer: {
-    flexDirection: "row",
+  productCard: {
+    backgroundColor: "#fff",
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 15,
     alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
   },
-  item: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 10,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 5,
-    flex: 1,
+  productImage: {
+    width: 100,
+    height: 100,
+    marginBottom: 10,
   },
-  text: {
+  productName: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  productPrice: {
     fontSize: 16,
+    color: "#888",
+    marginBottom: 10,
   },
-  selectionBox: {
-    width: 30,
-    height: 30,
-    borderWidth: 2,
-    borderColor: "#000",
+  addButton: {
+    backgroundColor: "#007bff",
+    paddingVertical: 8,
+    paddingHorizontal: 20,
     borderRadius: 5,
-    marginLeft: 10,
   },
-  selectedBox: {
-    backgroundColor: "blue",
+  addButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
