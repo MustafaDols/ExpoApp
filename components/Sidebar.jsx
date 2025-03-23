@@ -7,7 +7,7 @@ export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
 
   const routes = [
-    { name: "Home", path: "/" },
+    { name: "Home", path: "/index" },
     { name: "About", path: "/About" },
     { name: "Scroll View", path: "/scroll-view" },
     { name: "Flat List", path: "/flat-list" },
@@ -15,6 +15,10 @@ export default function Sidebar() {
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
+  };
+
+  const handleLogout = () => {
+    router.push("/login"); 
   };
 
   return (
@@ -39,12 +43,17 @@ export default function Sidebar() {
               style={styles.navItem}
               onPress={() => {
                 router.push(route.path);
-                setIsOpen(false); // Close sidebar after navigation
+                setIsOpen(false); 
               }}
             >
               <Text style={styles.navText}>{route.name}</Text>
             </TouchableOpacity>
           ))}
+
+          {/* Logout Button */}
+          <TouchableOpacity style={styles.navItem} onPress={handleLogout}>
+            <Text style={styles.navText}>Logout</Text>
+          </TouchableOpacity>
         </View>
       )}
     </>
