@@ -1,0 +1,134 @@
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
+
+export default function GuessNumberGame() {
+  const [guess, setGuess] = useState("");
+  const [randomNumber, setRandomNumber] = useState(
+    Math.floor(Math.random() * 100)
+  );
+  const [feedback, setFeedback] = useState("Lower or higher?");
+  const [guessList, setGuessList] = useState<number[]>([]);
+
+  const checkGuess = () => {
+    const num = parseInt(guess);
+    if (isNaN(num) || num < 0 || num > 99) return;
+
+    setGuessList([...guessList, num]);
+
+    if (num === randomNumber) {
+      setFeedback("Correct! 🎉");
+    } else if (num < randomNumber) {
+      setFeedback("Higher!");
+    } else {
+      setFeedback("Lower!");
+    }
+
+    setGuess(""); // تفريغ حقل الإدخال بعد التخمين
+  };
+
+  const resetGame = () => {
+    setRandomNumber(Math.floor(Math.random() * 100));
+    setGuess("");
+    setGuessList([]);
+    setFeedback("Lower or higher?");
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.topSection}>
+        <Text style={styles.label}>Enter your guess between 0 and 99:</Text>
+        <View style={styles.inputRow}>
+          <TextInput
+            style={styles.input}
+            keyboardType="numeric"
+            value={guess}
+            onChangeText={setGuess}
+            placeholder="Enter your guess"
+            placeholderTextColor="#555"
+          />
+          <TouchableOpacity
+            style={[styles.button, guess === "" && styles.disabledButton]}
+            onPress={checkGuess}
+            disabled={guess === ""}
+          >
+            <Text style={styles.buttonText}>CHECK</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <View style={styles.middleSection}>
+        <Text style={styles.guessText}>
+          Your guesses: {guessList.length > 0 ? guessList.join(", ") : "?"}
+        </Text>
+        <Text style={styles.guessText}>Attempts: {guessList.length}</Text>
+      </View>
+
+      <View style={styles.bottomSection}>
+        <Text style={styles.feedbackText}>{feedback}</Text>
+      </View>
+
+      <TouchableOpacity style={styles.resetButton} onPress={resetGame}>
+        <Text style={styles.resetText}>RESET</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: "#fff", padding: 10 },
+
+  topSection: {
+    flex: 3,
+    backgroundColor: "#8a2be2",
+    padding: 20,
+    justifyContent: "center",
+  },
+  label: { fontSize: 18, color: "#fff", textAlign: "center", marginBottom: 10 },
+  inputRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  input: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    backgroundColor: "#add8e6",
+    padding: 10,
+    textAlign: "center",
+    fontSize: 16,
+  },
+  button: { backgroundColor: "#007BFF", padding: 10, marginLeft: 10 },
+  disabledButton: { backgroundColor: "#ccc" },
+  buttonText: { color: "#fff", fontWeight: "bold" },
+
+  middleSection: {
+    flex: 1,
+    backgroundColor: "#add8e6",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  guessText: { fontSize: 16, fontWeight: "bold", color: "#000" },
+
+  bottomSection: {
+    flex: 4,
+    backgroundColor: "#ffcc00",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  feedbackText: { fontSize: 28, fontWeight: "bold", color: "#000" },
+
+  resetButton: {
+    backgroundColor: "#00ffff",
+    padding: 15,
+    alignItems: "center",
+    marginTop: 10,
+  },
+  resetText: { fontSize: 18, fontWeight: "bold", color: "#000" },
+});
